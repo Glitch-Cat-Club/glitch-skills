@@ -1,0 +1,149 @@
+{
+  "question": "What happens when I press Send it in?",
+  "shape": "A",
+  "place": "glitchcatclub.com/apply",
+  "root": "../../../website",
+  "run": "Read from the code and the live page on 8 October 2026. Nothing was sent.",
+  "about": {
+    "what": "The request form on your website.",
+    "who": "A member fills it in to ask for a topic to be covered in a deep dive.",
+    "on": "Six boxes, three of them required, and one button.",
+    "address": "glitchcatclub.com/apply"
+  },
+  "files": [
+    {"id": "page", "path": "apply/index.html", "kind": "runs in your browser", "says": "The request page and the script behind its form"},
+    {"id": "handler", "path": "api/apply.js", "kind": "runs on the site's server", "says": "The handler: receives the form and decides what to do with it"}
+  ],
+  "moments": [
+    {
+      "state": "do",
+      "say": "You press Send it in.",
+      "screen": {
+        "shot": "form",
+        "source": "Captured from the live site, 8 Oct 2026.",
+        "parts": [
+          {"part": "name", "name": "Your name", "says": "Required. Checked by Validation."},
+          {"part": "email", "name": "Email", "says": "Required, and must have the shape of an email. Checked by Validation."},
+          {"part": "topic", "name": "Topic or concept you want covered", "says": "Required. Checked by Validation."},
+          {"part": "context", "name": "Why this, and where are you stuck?", "says": "Optional."},
+          {"part": "skill", "name": "Your current level", "says": "Optional. A choice of four, from New to AI to Advanced."},
+          {"part": "links", "name": "Anything to link or reference", "says": "Optional."},
+          {"part": "send", "name": "Send it in", "says": "The button you press. Everything on the right starts here.", "here": true},
+          {"part": "menu", "name": "The menu", "says": "Four links back to the home page. Not part of this walk."},
+          {"part": "join", "name": "Join the club", "says": "Opens the community on Skool in a new tab. Not part of this walk."}
+        ]
+      },
+      "hidden": [
+        {
+          "icon": "list",
+          "name": "Validation",
+          "title": "Checks the form is filled in before anything is sent.",
+          "why": "So a half-empty request never leaves your browser.",
+          "here": "Name, email and topic must be filled, and the email must have the shape of one. If not, you see a message and nothing is sent.",
+          "files": ["page"],
+          "code": [{"file": "page", "start": 453, "end": 461, "marks": [454, 458], "plain": "The two lit lines are the checks. Under each one is the message you would see."}]
+        }
+      ]
+    },
+    {
+      "state": "see",
+      "say": "The button greys out and says Sending...",
+      "screen": {
+        "shot": "sending",
+        "source": "Captured from the live site, 8 Oct 2026, with the button set to this state by hand. Nothing was sent.",
+        "parts": [
+          {"part": "send", "name": "Sending...", "says": "The same button. It cannot be pressed twice while the request is on its way.", "here": true}
+        ]
+      },
+      "hidden": [
+        {
+          "icon": "swap",
+          "name": "Request",
+          "title": "Sends your answers to the handler.",
+          "why": "Email has to be sent from the site's server, where the key for it is kept. The handler is the piece of your site that receives the form and decides what to do with it.",
+          "here": "Your six answers, and one hidden box called Company, go to the handler at /api/apply.",
+          "files": ["page"],
+          "code": [{"file": "page", "start": 463, "end": 470, "marks": [466], "plain": "The first two lines grey the button out. The lit line sends your answers."}]
+        },
+        {
+          "icon": "robot",
+          "name": "Honeypot",
+          "title": "Drops anything a robot sent.",
+          "why": "So spam never reaches the people who read the requests. A honeypot is a box a person never sees, so only a robot fills it in.",
+          "here": "If the hidden Company box has anything in it, the handler answers \"ok\" and sends nothing. The robot believes it worked.",
+          "files": ["handler"],
+          "code": [{"file": "handler", "start": 142, "end": 145, "marks": [143], "plain": "The lit line asks: is there anything in the Company box?"}]
+        },
+        {
+          "icon": "list",
+          "name": "Validation, again",
+          "title": "Checks the same three boxes a second time.",
+          "why": "The check on the page can be skipped by sending straight to the handler, so the handler does not rely on it.",
+          "here": "Name, email and topic must be there, and the email must have the shape of one. If not, it sends a message back and stops.",
+          "files": ["handler"],
+          "code": [{"file": "handler", "start": 147, "end": 160, "marks": [151, 156], "plain": "The two lit lines are the same two checks, made again on the server."}]
+        },
+        {
+          "icon": "lock",
+          "size": "small",
+          "name": "The mail key",
+          "title": "Fetches the key that lets it send email.",
+          "why": "The mail service only accepts email from someone holding the key. It is kept in the site's settings, never in the code.",
+          "here": "If the key is missing, it stops, and you see \"Mail is not configured. Please try again later.\"",
+          "files": ["handler"],
+          "code": [{"file": "handler", "start": 162, "end": 168, "marks": [162], "plain": "The lit line reads the key from the site's settings."}]
+        },
+        {
+          "icon": "note",
+          "name": "Build the email",
+          "title": "Writes one email from your answers.",
+          "why": "So the request arrives as one readable message.",
+          "here": "The subject is \"New deep-dive request:\" and the first 60 characters of your topic. The body is a table of your six answers.",
+          "files": ["handler"],
+          "code": [{"file": "handler", "start": 80, "end": 94, "marks": [81, 82, 83, 84, 85], "plain": "The lit lines write the subject. The list under them is the six rows of the table."}]
+        },
+        {
+          "icon": "mail",
+          "name": "Send",
+          "title": "Hands the email to Resend, a mail service.",
+          "why": "Your site cannot send email by itself. Resend does it.",
+          "here": "It goes to the people who run the club, with the reply address set to yours, so their reply reaches you directly. If Resend refuses it, you see \"We could not send that right now. Please try again shortly.\"",
+          "files": ["handler"],
+          "code": [{"file": "handler", "start": 182, "end": 196, "marks": [182, 190, 191], "plain": "The first lit line sends it. The other two say who it goes to and where a reply goes."}]
+        }
+      ]
+    },
+    {
+      "state": "see",
+      "say": "The form is replaced by Got it.",
+      "screen": {
+        "shot": "thanks",
+        "source": "Captured from the live site, 8 Oct 2026, with the thank-you shown by hand. Nothing was sent.",
+        "parts": [
+          {"part": "title", "name": "Got it.", "says": "Tells you the request arrived.", "here": true},
+          {"part": "body", "name": "The message", "says": "Says every request is read."},
+          {"part": "back", "name": "Back to the community", "says": "A link to the community on Skool."}
+        ]
+      },
+      "hidden": [
+        {
+          "icon": "eye",
+          "name": "Show the thank-you",
+          "title": "Swaps the form for the thank-you.",
+          "why": "So you know it arrived.",
+          "here": "When the handler answers \"ok\", the page hides the form and shows the thank-you. It was in the page all along, out of sight.",
+          "files": ["page"],
+          "code": [{"file": "page", "start": 476, "end": 486, "marks": [477, 478], "plain": "The lit lines say: if the answer was ok, mark the form as sent. The lines under them handle an answer that was not ok."}]
+        }
+      ]
+    }
+  ],
+  "silent": [
+    {"title": "Your request is not stored anywhere", "text": "There is no database. The request exists only as that one email. If Resend refuses it, it is gone unless you try again.", "show": "What would it take to keep a copy of every request?"}
+  ],
+  "ask": [
+    "What would it take to keep a copy of every request, as well as emailing it?",
+    "Walk the request form for real with a test address, and show me the email that arrives.",
+    "What happens if the mail service is down when someone presses Send it in?"
+  ]
+}

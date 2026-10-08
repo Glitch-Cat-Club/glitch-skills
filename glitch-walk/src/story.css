@@ -1,0 +1,1151 @@
+/* story.css: the look of every story page. Change the tokens here and every page follows.
+   Flat paper colour with a little grain, ink lines, soft shadows. No pills, no coloured bands on box edges.
+   Upright first, then widened. */
+:root {
+  --paper: #efe1c2;
+  --sheet: #fbf4e2;
+  --sheet-2: #f4e9cf;
+  --ink: #0b0a08;
+  --ink-soft: #4a4336;
+  --night: #15141a;
+  --night-2: #1f1d25;
+  --pink: #ef4f7a;
+  --teal: #26b7aa;
+  --yellow: #f6bd33;
+  /* one system for structure: every heading is the same tab shape and every table the same shape.
+     The tab's colour says what kind of thing it heads: yellow = the background you read first, ink = the walk itself,
+     paper = a part inside a card. Pink (you) and teal (out of sight) are small accents only. The code is always dark. */
+  --tab-about: var(--yellow);
+  --label-about: #fbe7ae;
+  --c-you: var(--pink);
+  --c-out: var(--teal);
+  --c-you-soft: #fbd3dd;
+  --c-out-soft: #cdeee9;
+  --display: 'Changa One', Impact, sans-serif;
+  --body: 'Inter', system-ui, sans-serif;
+  --mono: 'DM Mono', ui-monospace, Consolas, monospace;
+  --line: 2.5px solid var(--ink);
+  --r: 10px;
+  --lift: 0 1px 0 rgba(11, 10, 8, 0.55), 0 16px 22px -16px rgba(70, 45, 10, 0.6);
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .18  0 0 0 0 .14  0 0 0 0 .08  0 0 0 .6 -.05'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+  --grain-light: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .95  0 0 0 0 .85  0 0 0 .22 -.04'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  background: var(--paper);
+  scroll-padding-top: 78px;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 400 16px/1.45 var(--body);
+  padding: 14px 12px 60px;
+  overflow-x: hidden;
+  background: var(--paper);
+}
+/* grain lies over everything, so sheets and desk share one surface */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: var(--grain);
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+}
+.wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+:focus-visible {
+  outline: 3px solid var(--pink);
+  outline-offset: 2px;
+}
+[hidden] {
+  display: none !important;
+}
+h1,
+h2,
+h3,
+p,
+ol,
+ul,
+figure {
+  margin: 0;
+  padding: 0;
+}
+ol,
+ul {
+  list-style: none;
+}
+.dark {
+  background: var(--grain-light), var(--night);
+  color: #efe6d2;
+}
+
+/* ── the question this page answers ── */
+.top {
+  position: relative;
+  background: var(--grain-light), var(--night);
+  color: #efe6d2;
+  border-radius: var(--r);
+  padding: 20px 150px 20px 20px;
+  box-shadow: var(--lift);
+}
+/* the club's mark, always in the top right of the header. Lightened into the header, so its own black falls away
+   and only the cat, the words and the colour sit on the dark */
+.top::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  width: 118px;
+  height: 118px;
+  background: var(--logo) center / contain no-repeat;
+  mix-blend-mode: lighten;
+}
+.asked {
+  display: grid;
+  gap: 8px;
+}
+.asked span {
+  font: 500 12px/1 var(--mono);
+  color: var(--yellow);
+}
+.top h1 {
+  font: 400 clamp(28px, 5vw, 46px)/1 var(--display);
+}
+.top .run {
+  margin-top: 10px;
+  font: 400 13px/1.4 var(--mono);
+  color: var(--teal);
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 26px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(239, 230, 210, 0.25);
+}
+.facts li {
+  font: 400 14px/1.2 var(--body);
+  color: rgba(239, 230, 210, 0.8);
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.facts b {
+  font: 400 28px/1 var(--display);
+  color: var(--yellow);
+}
+
+/* ── jump to: the contents, drawn only when there is more than one thing you do.
+   Up to four things, when every word fits: one row, each number with its words.
+   Otherwise the row holds the numbers and the full list sits underneath, one line each ── */
+.strip {
+  position: sticky;
+  top: 6px;
+  z-index: 40;
+  margin: 12px 0 18px;
+  display: flex;
+  background: var(--sheet);
+  border: var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--lift);
+  overflow: hidden;
+}
+.strip .fold {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  padding: 0 12px;
+  font: 500 12px/1 var(--mono);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.strip .fold span {
+  font: 400 18px/1 var(--display);
+  color: var(--ink);
+}
+.strip .cells {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+.strip.many .cells {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26px, 1fr));
+}
+.strip .cells button {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-left: var(--line);
+  border-bottom: var(--line);
+  margin-bottom: -2.5px;
+  background: transparent;
+  padding: 9px 10px;
+  text-align: left;
+}
+.strip.many .cells button {
+  justify-content: center;
+  padding: 9px 4px;
+}
+.strip i,
+.contents i {
+  font: 400 18px/1 var(--display);
+  font-style: normal;
+}
+.strip b {
+  flex: 1;
+  min-width: 0;
+  font: 600 13px/1.2 var(--body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.strip button:hover,
+.strip button.on,
+.contents button:hover,
+.contents button.on {
+  background: var(--yellow);
+}
+/* the list is the same table as every other on the page: a tinted column of labels, ink lines between rows.
+   Its labels are yellow, like the other thing you read before the walk */
+.contents {
+  margin: -8px 0 20px;
+  background: var(--sheet);
+  border: var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--lift);
+  overflow: hidden;
+}
+.contents li + li {
+  border-top: var(--line);
+}
+.contents button {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+.contents i {
+  flex: 0 0 3em;
+  display: grid;
+  place-items: center;
+  background: var(--label-about);
+  border-right: var(--line);
+}
+.contents b {
+  padding: 9px 12px;
+  font: 600 15px/1.35 var(--body);
+}
+.contents button:hover i,
+.contents button.on i {
+  background: var(--yellow);
+}
+
+/* ── what you're looking at: four fixed lines, before any step ── */
+.about {
+  margin: 14px 0 20px;
+}
+.tab {
+  display: inline-block;
+  font: 400 18px/1 var(--display);
+  padding: 8px 12px 7px;
+  border: var(--line);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+}
+.lanes-head .tab {
+  border-bottom: var(--line);
+  border-radius: 6px;
+}
+.tab.t-about {
+  background: var(--tab-about);
+}
+.tab.t-walk {
+  background: var(--ink);
+  color: var(--sheet);
+}
+.tab.t-part {
+  background: var(--sheet-2);
+}
+.about .grid2,
+.parts ol {
+  border-top-left-radius: 0;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: minmax(8.5em, 12em) minmax(0, 1fr);
+  border: var(--line);
+  border-radius: 6px;
+  background: var(--sheet);
+  overflow: hidden;
+  margin: 0;
+  box-shadow: var(--lift);
+}
+.grid2 dt {
+  font: 400 15px/1.3 var(--display);
+  padding: 10px 12px;
+  border-right: var(--line);
+  border-bottom: var(--line);
+  background: var(--sheet-2);
+}
+.about .grid2 dt {
+  background: var(--label-about);
+}
+.grid2 dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font: 400 16px/1.4 var(--body);
+  padding: 10px 12px;
+  border-bottom: var(--line);
+}
+.grid2 dt:last-of-type,
+.grid2 dd:last-of-type {
+  border-bottom: 0;
+}
+.grid2 .addr {
+  font: 500 15px/1.4 var(--mono);
+}
+.deep .grid2 {
+  box-shadow: none;
+  grid-template-columns: 8.5em minmax(0, 1fr);
+}
+
+/* ── the board ── */
+.board {
+  display: grid;
+  gap: 18px;
+}
+.lanes-head {
+  display: none;
+}
+.moment {
+  position: relative;
+  padding-bottom: 26px;
+}
+.moment:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 40px;
+  bottom: 0;
+  border-left: 3px dashed var(--ink);
+  opacity: 0.7;
+}
+
+/* you: one line, then a picture of your window with every part of it marked */
+.you {
+  position: relative;
+  z-index: 1;
+  background: var(--sheet);
+  border: var(--line);
+  border-radius: var(--r);
+  padding: 12px;
+  box-shadow: var(--lift);
+  overflow: hidden;
+}
+.when {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 13px/1 var(--mono);
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.when b {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  background: var(--c-you);
+  color: var(--ink);
+  border: var(--line);
+  font: 400 16px/1 var(--display);
+  border-radius: 4px;
+}
+.screen {
+  border: var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--night);
+  cursor: zoom-in;
+}
+.screen.big {
+  cursor: default;
+}
+.screen .bar {
+  height: 30px;
+  background: var(--sheet-2);
+  border-bottom: var(--line);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+}
+.screen .bar i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.screen .bar span {
+  margin-left: 8px;
+  font: 500 14px/1 var(--mono);
+  color: var(--ink);
+}
+.view {
+  background: var(--grain-light), var(--night);
+  color: #efe6d2;
+  font: 400 13px/1.6 var(--mono);
+  padding: 12px 14px;
+  min-height: 96px;
+  max-height: 360px;
+  overflow: auto;
+}
+.view .ln {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 1.6em;
+}
+.view .prompt {
+  color: #fff;
+}
+.view .prompt::before {
+  content: '> ';
+  color: var(--pink);
+}
+.view .tool {
+  color: var(--teal);
+}
+.view .tool::before {
+  content: '● ';
+}
+.view .dim {
+  color: rgba(239, 230, 210, 0.4);
+}
+.view .cursor::after {
+  content: '▍';
+  color: var(--pink);
+}
+/* the picture and its spots share one box, sized by the capture itself (src/capture.py) */
+.photo {
+  position: relative;
+  background: #000;
+}
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.screen figcaption.real::before {
+  content: '● ';
+  color: var(--teal);
+}
+.screen figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font: 400 11px/1.35 var(--mono);
+  color: var(--ink-soft);
+  background: var(--sheet-2);
+  border-top: var(--line);
+  padding: 6px 9px;
+}
+.screen figcaption b {
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+}
+/* the outline stands a little off the thing it marks, and the number sits outside its corner, so neither covers a word */
+.spot {
+  position: absolute;
+  box-sizing: content-box;
+  margin: -5px;
+  padding: 3px;
+  border: 2px solid rgba(243, 230, 200, 0.75);
+  border-radius: 4px;
+}
+.spot i {
+  position: absolute;
+  left: -19px;
+  top: -15px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--sheet);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  font: 400 13px/1 var(--display);
+  font-style: normal;
+}
+.spot.here {
+  margin: -6px;
+  border: 3px solid var(--pink);
+  box-shadow: 0 0 0 4px rgba(239, 79, 122, 0.35);
+}
+.spot.here i {
+  background: var(--pink);
+  color: #fff;
+}
+.spot.on {
+  border-color: var(--yellow);
+  background: rgba(246, 189, 51, 0.22);
+}
+.spot.on i {
+  background: var(--yellow);
+}
+.screen.big .spot i {
+  width: 28px;
+  height: 28px;
+  left: -25px;
+  top: -19px;
+  font-size: 16px;
+}
+.parts {
+  margin-top: 14px;
+}
+.parts ol {
+  display: grid;
+  gap: 0;
+  border: var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--sheet);
+}
+.parts li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 8px 10px;
+  border-bottom: 1.5px solid rgba(11, 10, 8, 0.25);
+}
+.parts li:last-child {
+  border-bottom: 0;
+}
+.parts li > i {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  font: 400 13px/1 var(--display);
+  font-style: normal;
+  background: var(--sheet-2);
+}
+.parts li b {
+  display: block;
+  font: 600 15px/1.25 var(--body);
+}
+.parts li span {
+  display: block;
+  font: 400 14px/1.35 var(--body);
+  color: var(--ink-soft);
+}
+.parts li.here {
+  background: var(--c-you-soft);
+}
+.parts li.here > i {
+  background: var(--pink);
+  color: #fff;
+}
+.parts li.on {
+  background: #fff3c9;
+}
+.parts li.on > i {
+  background: var(--yellow);
+}
+.you h2 {
+  font: 400 clamp(22px, 4.4vw, 30px)/1.05 var(--display);
+  margin-bottom: 12px;
+}
+
+/* out of sight: a picture and a title, numbered in the order it happened */
+.out {
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 0 22px;
+  padding-left: 22px;
+  border-left: 3px solid var(--ink);
+}
+.steps {
+  display: grid;
+  gap: 2px;
+}
+.then {
+  font: 700 20px/1 var(--body);
+  text-align: center;
+  color: var(--ink);
+  padding: 1px 0 3px;
+}
+.step {
+  background: var(--sheet);
+  border: var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--lift);
+}
+.step.small {
+  background: var(--sheet-2);
+  box-shadow: none;
+}
+.step.dim {
+  opacity: 0.25;
+}
+.step.lit {
+  box-shadow:
+    0 0 0 3px var(--yellow),
+    var(--lift);
+}
+.step .row {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.step .row:hover {
+  background: #fff;
+}
+.step .row > .n {
+  font: 400 20px/1 var(--display);
+  width: 1.7em;
+  height: 1.7em;
+  display: grid;
+  place-items: center;
+  background: var(--c-out);
+  border: var(--line);
+  border-radius: 4px;
+}
+.step.small .row > .n {
+  font-size: 15px;
+  background: var(--c-out-soft);
+}
+.step .pic svg {
+  display: block;
+  width: 44px;
+  height: 44px;
+}
+.step.small .pic svg {
+  width: 28px;
+  height: 28px;
+}
+.step .name {
+  display: block;
+  font: 500 12px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.step .txt b {
+  display: block;
+  font: 600 16px/1.25 var(--body);
+}
+.step.small .txt b {
+  font: 500 15px/1.25 var(--body);
+}
+/* a step that happens inside or alongside the one before it sits in from the edge, under a different mark */
+.step.inside {
+  margin-left: 30px;
+}
+.then.in {
+  text-align: left;
+  padding-left: 38px;
+}
+/* a step that did not happen this time stands apart, dashed, and says what would set it off */
+.step.maybe {
+  border-style: dashed;
+  background: var(--sheet-2);
+  box-shadow: none;
+  margin-top: 10px;
+}
+.then.or {
+  padding: 0;
+}
+.step.maybe .row > .n {
+  background: var(--sheet);
+  font-size: 14px;
+}
+.step .cond {
+  display: block;
+  font: 600 13px/1.25 var(--body);
+  margin-bottom: 5px;
+}
+.where {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin-top: 5px;
+}
+.tag {
+  font: 500 12px/1.2 var(--mono);
+  background: none;
+  border: 0;
+  padding: 0 0 1px 15px;
+  position: relative;
+  color: var(--ink-soft);
+  border-bottom: 2px solid transparent;
+}
+.tag::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 10px;
+  height: 10px;
+  background: var(--hue);
+  border: 1.5px solid var(--ink);
+}
+.tag:hover,
+.tag.on {
+  color: var(--ink);
+  border-bottom-color: var(--hue);
+}
+.step .chev {
+  width: 26px;
+  height: 26px;
+  border: var(--line);
+  border-radius: 4px;
+  font: 700 16px/21px var(--body);
+  text-align: center;
+  background: var(--sheet-2);
+}
+.quiet {
+  font: 500 15px/1.4 var(--body);
+  color: var(--ink-soft);
+  border: 2.5px dashed var(--ink-soft);
+  border-radius: var(--r);
+  padding: 12px 14px;
+}
+
+/* depth: always the same three things, in this order: why it exists, what it does here, the code */
+.deep {
+  border-top: var(--line);
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  background: var(--sheet-2);
+}
+.unsure {
+  font-size: 15px;
+  line-height: 1.4;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: var(--line);
+  background: var(--sheet);
+}
+.unsure b {
+  display: block;
+  font: 400 15px/1 var(--display);
+  margin-bottom: 5px;
+}
+.unsure {
+  border-style: dashed;
+  background: #fff3c9;
+  margin-top: 10px;
+}
+.deep .unsure {
+  margin-top: 0;
+}
+.snip {
+  background: var(--grain-light), var(--night);
+  color: #efe6d2;
+  border: var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  min-width: 0;
+}
+.snip .from {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 14px;
+  padding: 9px 14px;
+  font: 500 12px/1.4 var(--mono);
+  color: rgba(239, 230, 210, 0.75);
+  border-bottom: 1px solid rgba(239, 230, 210, 0.14);
+  overflow-wrap: anywhere;
+}
+.snip .from b {
+  font-weight: 500;
+  color: #fff;
+  padding-left: 16px;
+  position: relative;
+}
+.snip .from b::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 10px;
+  height: 10px;
+  background: var(--hue);
+}
+.snip .plain {
+  padding: 12px 14px;
+  font: 600 16px/1.4 var(--body);
+  color: #fff;
+}
+.snip pre {
+  margin: 0;
+  padding: 8px 0 12px;
+  font: 400 13px/1.7 var(--mono);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239, 230, 210, 0.35) transparent;
+  background: rgba(0, 0, 0, 0.28);
+  border-top: 1px solid rgba(239, 230, 210, 0.14);
+}
+/* a long line folds under itself, clear of the line numbers, so the part a sentence points at is never off the edge */
+.snip .l {
+  display: block;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 0 14px 0 4.6em;
+  text-indent: -4.6em;
+  color: rgba(239, 230, 210, 0.38);
+}
+.snip .l .n {
+  display: inline-block;
+  width: 4.6em;
+  padding-right: 1em;
+  text-indent: 0;
+  text-align: right;
+  color: rgba(239, 230, 210, 0.3);
+  user-select: none;
+}
+.snip .l.mark {
+  color: #fff;
+  background: rgba(246, 189, 51, 0.2);
+}
+.snip .l.mark .n {
+  color: var(--yellow);
+}
+
+/* ── where it lives ── */
+.map {
+  background: var(--grain-light), var(--night);
+  color: #efe6d2;
+  border-radius: var(--r);
+  padding: 16px 14px;
+  box-shadow: var(--lift);
+  align-self: start;
+}
+.map h3,
+.silent h3,
+.ask h3 {
+  font: 400 24px/1 var(--display);
+}
+.map .hint {
+  font: 400 12px/1.4 var(--mono);
+  color: rgba(239, 230, 210, 0.65);
+  margin: 6px 0 14px;
+}
+.kind {
+  margin-top: 14px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.kind .k {
+  grid-column: 1 / -1;
+  font: 500 12px/1 var(--mono);
+  color: rgba(239, 230, 210, 0.6);
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(239, 230, 210, 0.2);
+}
+.room {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #efe6d2;
+  padding: 8px 10px 8px 28px;
+  position: relative;
+}
+.room::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 11px;
+  width: 10px;
+  height: 10px;
+  background: var(--hue);
+}
+.room b {
+  font: 500 13px/1.2 var(--mono);
+  overflow-wrap: anywhere;
+}
+.room span {
+  font: 400 13px/1.3 var(--body);
+  color: rgba(239, 230, 210, 0.72);
+}
+.room:hover,
+.room.on {
+  background: var(--hue);
+  color: var(--ink);
+}
+.room:hover span,
+.room.on span {
+  color: var(--ink);
+}
+.room:hover::before,
+.room.on::before {
+  background: var(--ink);
+}
+
+/* ── leaves no sign, and what to ask next ── */
+.silent,
+.ask {
+  margin-top: 22px;
+  border-radius: var(--r);
+  padding: 16px;
+}
+.silent {
+  border: 2.5px dashed var(--ink);
+}
+.silent > p {
+  margin: 6px 0 12px;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+.ask > p {
+  margin: 6px 0 12px;
+  font-size: 15px;
+}
+/* the cards share their rows: every title, every text and every question starts on the same level across the row,
+   however long any one of them runs */
+.silent ul {
+  display: grid;
+  gap: 0 10px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+.silent li {
+  background: var(--sheet);
+  border: 2.5px dashed var(--ink-soft);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  row-gap: 5px;
+  align-items: start;
+}
+.silent li b {
+  font: 600 16px/1.25 var(--body);
+}
+.silent li span {
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.silent li em {
+  font: 500 13px/1.4 var(--mono);
+  font-style: normal;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 2px solid var(--ink);
+}
+.silent li em::before {
+  content: '> ';
+  color: var(--pink);
+}
+.ask {
+  background: var(--yellow);
+  border: var(--line);
+  box-shadow: var(--lift);
+}
+.ask ul {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ask li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--sheet);
+  border: var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font: 500 16px/1.35 var(--mono);
+}
+.ask li span::before {
+  content: '> ';
+  color: var(--pink);
+}
+.mini-copy {
+  font: 500 12px/1 var(--mono);
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 0;
+  background: var(--ink);
+  color: var(--sheet);
+  white-space: nowrap;
+}
+
+.zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(11, 10, 8, 0.95);
+  overflow: auto;
+  padding: 64px 16px 80px;
+  cursor: zoom-out;
+}
+.zoom-in {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+  cursor: default;
+}
+.zoom .parts {
+  background: var(--paper);
+  border-radius: var(--r);
+  padding: 12px;
+  margin: 0;
+}
+.zoom .shut {
+  position: fixed;
+  right: 18px;
+  top: 14px;
+  font: 600 14px/1 var(--body);
+  background: var(--yellow);
+  color: var(--ink);
+  border: var(--line);
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+
+/* ── a landscape screen: three lanes side by side ── */
+@media (min-width: 1000px) {
+  body {
+    padding: 24px 24px 60px;
+    font-size: 17px;
+  }
+  .top {
+    padding: 26px 168px 26px 28px;
+  }
+  .top::after {
+    top: 16px;
+    right: 26px;
+  }
+  .facts {
+    margin-right: -140px;
+  }
+  .board {
+    grid-template-columns: minmax(0, 1fr) 250px;
+    gap: 26px;
+    align-items: start;
+  }
+  .map {
+    position: sticky;
+    top: 74px;
+    max-height: calc(100vh - 90px);
+    overflow: auto;
+  }
+  .kind {
+    grid-template-columns: 1fr;
+  }
+  .lanes-head {
+    display: grid;
+    grid-template-columns: minmax(340px, 46%) 1fr;
+    gap: 44px;
+    margin-bottom: 14px;
+  }
+  .moment {
+    display: grid;
+    grid-template-columns: minmax(340px, 46%) 1fr;
+    gap: 44px;
+    align-items: start;
+    padding-bottom: 30px;
+  }
+  .moment:not(:last-child)::before {
+    left: 24px;
+  }
+  .out {
+    margin: 0;
+    padding-left: 18px;
+  }
+  .out::before {
+    content: '';
+    position: absolute;
+    left: -44px;
+    top: 34px;
+    width: 44px;
+    border-top: 3px solid var(--ink);
+  }
+}
+/* upright: full size really is bigger, and you move around it */
+@media (max-width: 700px) {
+  .top {
+    padding-right: 20px;
+  }
+  .top::after {
+    top: 6px;
+    right: 10px;
+    width: 64px;
+    height: 64px;
+  }
+  .asked span {
+    padding: 14px 70px 14px 0;
+  }
+  .zoom-in {
+    justify-items: start;
+  }
+  .zoom .screen.big {
+    width: 210vw;
+  }
+}
+@media (max-width: 520px) {
+  .grid2,
+  .deep .grid2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .grid2 dt {
+    border-right: 0;
+  }
+  .step .row {
+    gap: 9px;
+  }
+  .step .pic svg {
+    width: 34px;
+    height: 34px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}

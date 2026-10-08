@@ -1,0 +1,8 @@
+__pycache__/
+.pytest_cache/
+
+# --- Glitch publish boundary (added by workspace-git) ---
+.planning/
+STATE.md
+CLAUDE.md
+AGENTS.md
