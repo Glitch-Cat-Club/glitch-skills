@@ -1,3 +1,5 @@
+![Glitch Walk](glitch-walk/banner.png)
+
 # Glitch Skills
 
 Free skills from Glitch Cat Club.

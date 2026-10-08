@@ -1,3 +1,5 @@
+![Glitch Walk](banner.png)
+
 # Glitch Walk
 
 **Code is hard to read. If you vibe coded yours, you have probably never read it.**
