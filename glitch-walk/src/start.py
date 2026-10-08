@@ -81,7 +81,7 @@ def opened(project: Path, files, step: str) -> None:
         raise Refused(f"{step}: it names no files. Name at least one you read.")
     for f in files:
         if not (project / f).is_file():
-            raise Refused(f"{step}: {f} is not in {project}. Only name a file you opened.")
+            raise Refused(f"{step}: {f} is not in {project}. Only name a file you opened. If the file is there, the path to the project is wrong: it is measured from this walk's own folder.")
 
 
 def code_files(project: Path) -> int:

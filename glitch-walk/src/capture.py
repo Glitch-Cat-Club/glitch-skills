@@ -73,12 +73,17 @@ def main() -> None:
             page.evaluate(do)
         page.wait_for_timeout(800)
         last = page.locator(until).first.bounding_box()
+        if last is None:
+            raise SystemExit(f"not on the page, or hidden: the last thing to include ({until}). Name something that can be seen.")
         height = round(last["y"] + last["height"] + MARGIN)
         boxes = {}
         for name, selector in parts:
             b = page.locator(selector).first.bounding_box()
             if b is None:
                 raise SystemExit(f"not on the page: {name} ({selector})")
+            if b["y"] + b["height"] > height or b["x"] + b["width"] > WIDTH or b["x"] < 0 or b["y"] < 0:
+                raise SystemExit(f"outside the picture: {name} ({selector}). The picture is cut just below {until}. "
+                                 "Make the last thing to include something lower down, or leave this part out.")
             filled = page.locator(selector).first.evaluate(FILLED)
             if filled is not None and min(filled) < LOOSE:
                 print(f"CHECK {name}: this piece draws nothing itself. It only holds other pieces, and what can be seen in it "
